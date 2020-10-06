@@ -1,0 +1,26 @@
+{
+  "name": "vcompy-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "config": "^3.3.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-validator": "^6.6.1",
+    "helmet": "^4.1.1",
+    "mongoose": "^5.10.6",
+    "nodemon": "^2.0.4",
+    "public-ip": "^4.0.2",
+    "swagger-ui-express": "^4.1.4",
+    "wagner-core": "^0.2.0"
+  }
+}
