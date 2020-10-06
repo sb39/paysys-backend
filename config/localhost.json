@@ -1,6 +1,6 @@
 {
   "db": {
-    "connectOn": "mongodb+srv://test:test123@test-s8kcw.gcp.mongodb.net/<dbname>?retryWrites=true&w=majority",
+    "connectOn": "mongodb://localhost:27017",
     "dbName": "vcomply"
   }
 }
