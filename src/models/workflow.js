@@ -18,10 +18,6 @@ module.exports = (mongoose) => {
         default: false,
       },
       levelArrangements: [LevelSchema],
-      status: {
-        type: Number, // [Active : 1, Reject: 0, Reject & Remove from workflow: 2]
-        default: 1,
-      },
     },
     {
       timestamps: true,

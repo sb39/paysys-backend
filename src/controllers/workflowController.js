@@ -7,13 +7,7 @@ class WorkflowController {
 
   async registerWorkflow(bodyObj) {
     try {
-      // const { defaultWorkflow, levelArrangements } = bodyObj;
-      // const createObj = { defaultWorkflow, status: 1 };
-      // createObj.levelArrangements = levelArrangements.map((e) => ({
-      //   levelType: e,
-      // }));
-      console.log(bodyObj);
-      // await this.workflowManager.createNew(bodyObj);
+      await this.workflowManager.createNew(bodyObj);
       return { code: 201 };
     } catch (error) {
       error.status = error.status || 400;

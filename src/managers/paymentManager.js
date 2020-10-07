@@ -2,12 +2,13 @@ class PaymentManager {
   constructor(wagner) {
     this.wagner = wagner;
     this.payments = this.wagner.get('Payments');
+    this.status = this.wagner.get('Stat');
   }
 
   async create(obj) {
     try {
-      await this.payments.create(obj);
-      return true;
+      const createR = await this.payments.create(obj);
+      return createR;
     } catch (error) {
       throw error;
     }
@@ -46,6 +47,59 @@ class PaymentManager {
           },
         ]);
       return payments;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getStat(condition) {
+    try {
+      const status = await this.status.findOne(condition).populate([
+        {
+          path: 'paymentId',
+          select: '-createdAt -updatedAt -__v',
+        },
+      ]);
+      return status;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllStat() {
+    try {
+      const status = await this.status.find();
+      return status;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async createStat(createObj) {
+    try {
+      const createR = await this.status.create(createObj);
+      return createR;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateStat(conditions, updateObjs) {
+    try {
+      const u = await this.status.updateOne(conditions, updateObjs);
+      if (u.nModified > 0) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateSubDocs(condition, subdoc) {
+    console.log(condition, subdoc);
+    try {
+      const update = await this.status.updateOne(condition, update);
+      return true;
     } catch (error) {
       throw error;
     }

@@ -27,7 +27,8 @@ mongoose
   .then(() => console.log('Sucessfully connected to mongo'))
   .catch((err) => console.log('Connection to mongoose failed', err));
 
-app.use('/endpoints-desc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.get('/', (req, res) => res.redirect('/endpoints-docs'));
+app.use('/endpoints-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 require('./utils/middlewares')(wagner);
 require('./utils/helpers')(wagner);

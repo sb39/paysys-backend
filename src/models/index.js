@@ -4,4 +4,5 @@ module.exports = (wagner) => {
   wagner.factory('Users', () => require('./users')(mongoose));
   wagner.factory('Workflows', () => require('./workflow')(mongoose));
   wagner.factory('Payments', () => require('./payments')(mongoose));
+  wagner.factory('Stat', () => require('./paymentStat')(mongoose));
 };

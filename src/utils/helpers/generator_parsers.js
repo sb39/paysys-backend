@@ -40,6 +40,18 @@ class GeneratorParser {
     };
     return { code: 200, data: outputObj };
   }
+
+  passwordDecryptor(enc_password) {
+    var crypt = require('crypto');
+    var key = crypt.createDecipheriv(
+      'aes-128-cbc',
+      process.env.ENC_KEY,
+      process.env.IV,
+    );
+    var decrypted_str = key.update(enc_password, 'hex', 'utf8');
+    decrypted_str += key.final('utf8');
+    return decrypted_str;
+  }
 }
 
 module.exports = GeneratorParser;

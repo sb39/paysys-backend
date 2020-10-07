@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "This is a simple API",
+    "description": "Vendor Management API",
     "version": "1.0.0",
     "title": "Vendor Management API",
     "contact": {
@@ -12,141 +12,816 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "host": "virtserver.swaggerhub.com",
-  "basePath": "/sb39/vendor-management/1.0.0",
+  "host": "paysysapp.herokuapp.com",
+  "basePath": "/api",
   "tags": [
     {
-      "name": "User",
-      "description": "User based API endpoints"
+      "name": "Auth",
+      "description": "User Auth based API endpoints"
     },
     {
-      "name": "developers",
-      "description": "Operations available to regular developers"
+      "name": "Users",
+      "description": "Users based API endpoints"
+    },
+    {
+      "name": "Pay",
+      "description": "Payment Cycle based API endpoints"
+    },
+    {
+      "name": "Workflow",
+      "description": "Workflow based API endpoints"
     }
   ],
   "schemes": ["https", "http"],
   "paths": {
-    "/inventory": {
-      "get": {
-        "tags": ["developers"],
-        "summary": "searches inventory",
-        "description": "By passing in the appropriate options, you can search for\navailable inventory in the system\n",
-        "operationId": "searchInventory",
+    "/auth/login": {
+      "post": {
+        "deprecated": false,
+        "tags": ["Auth"],
+        "summary": "Auth token generator",
+        "description": "Gives auth token so that user can query any API's that are present in the system",
+        "operationId": "auth_login",
         "produces": ["application/json"],
         "parameters": [
           {
-            "name": "searchString",
-            "in": "query",
-            "description": "pass an optional search string for looking up inventory",
-            "required": false,
-            "type": "string"
+            "name": "email",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/LoginRequestBody"
+            },
+            "description": "Email of user",
+            "required": true
           },
           {
-            "name": "skip",
-            "in": "query",
-            "description": "number of records to skip for pagination",
-            "required": false,
-            "type": "integer",
-            "minimum": 0,
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "maximum number of records to return",
-            "required": false,
-            "type": "integer",
-            "maximum": 50,
-            "minimum": 0,
-            "format": "int32"
+            "name": "email",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/LoginRequestBody"
+            },
+            "description": "Password",
+            "required": true
           }
         ],
         "responses": {
           "200": {
-            "description": "search results matching criteria",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/InventoryItem"
+            "description": "Success",
+            "examples": {
+              "application/json": {
+                "userId": "5f7c6bab79d256521e199a7f",
+                "authToken": "4870fb8c78011fcf0c06f0f723b72115"
               }
             }
           },
           "400": {
-            "description": "bad input parameter"
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "deprecated": false,
+        "summary": "register new users",
+        "operationId": "user_post",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/UserPostRequestBody"
+            },
+            "description": "email",
+            "required": true
+          },
+          {
+            "name": "name",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/UserPostRequestBody"
+            },
+            "description": "name",
+            "required": true
+          },
+          {
+            "name": "userType",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/UserPostRequestBody"
+            },
+            "description": "userType",
+            "required": true
+          },
+          {
+            "name": "levelAccess",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/UserPostRequestBody"
+            },
+            "description": "levelAccess",
+            "required": true
+          },
+          {
+            "name": "accessGrant",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/UserPostRequestBody"
+            },
+            "description": "accessGrant",
+            "required": true
+          },
+          {
+            "name": "superUser",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/UserPostRequestBody"
+            },
+            "description": "superUser",
+            "required": true
+          },
+          {
+            "name": "password",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/UserPostRequestBody"
+            },
+            "description": "password",
+            "required": true
+          }
+        ],
+        "description": "Create new Users",
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "get": {
+        "deprecated": false,
+        "summary": "get user info",
+        "operationId": "user_get",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "header",
+            "type": "string",
+            "default": "5f7c4cee82488502f5bc7779",
+            "description": "user_id",
+            "required": true
+          },
+          {
+            "name": "authToken",
+            "in": "header",
+            "type": "string",
+            "default": "7e9939ff5cf90d51577d5eafad30f951",
+            "description": "authToken",
+            "required": true
+          }
+        ],
+        "description": "User data",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": [
+                {
+                  "useId": "5f7c4cee82488502f5bc7779",
+                  "userType": "User",
+                  "levelAccess": ["Sequential", "RoundRobin"],
+                  "accessGrant": "Admin",
+                  "superUser": true,
+                  "email": "abc122@abc.com",
+                  "name": "test1"
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "deprecated": false,
+        "summary": "get user data one at a time",
+        "operationId": "get_singular_user",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true,
+            "description": "user id"
+          },
+          {
+            "name": "user_id",
+            "in": "header",
+            "type": "string",
+            "default": "5f7c4cee82488502f5bc7779",
+            "description": "user_id",
+            "required": true
+          },
+          {
+            "name": "authToken",
+            "in": "header",
+            "type": "string",
+            "default": "7e9939ff5cf90d51577d5eafad30f951",
+            "description": "authToken",
+            "required": true
+          }
+        ],
+        "description": "get user data one at a time",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": {
+                "useId": "5f7c4cee82488502f5bc7779",
+                "userType": "User",
+                "levelAccess": ["Sequential", "RoundRobin"],
+                "accessGrant": "Admin",
+                "superUser": true,
+                "email": "abc122@abc.com",
+                "name": "test1"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorised"
+          }
+        }
+      }
+    },
+    "/users/available": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "get all available payments to approve",
+        "description": "get all available payments to approve",
+        "operationId": "user_get_payments",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "header",
+            "type": "string",
+            "default": "5f7c4cee82488502f5bc7779",
+            "description": "user_id",
+            "required": true
+          },
+          {
+            "name": "authToken",
+            "in": "header",
+            "type": "string",
+            "default": "7e9939ff5cf90d51577d5eafad30f951",
+            "description": "authToken",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": [
+                {
+                  "approveCount": 0,
+                  "_id": "5f7cd06422433b3971a78317",
+                  "paymentId": "5f7cd08e55705f39dd007f08",
+                  "currentStage": "Sequential",
+                  "status": 1,
+                  "lastStageUpdate": [],
+                  "__v": 0
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unautorised"
+          }
+        }
+      }
+    },
+    "/pay": {
+      "get": {
+        "tags": ["Pay"],
+        "deprecated": false,
+        "summary": "Get Payment Details",
+        "description": "Get Payment Details",
+        "operationId": "payment_get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "header",
+            "type": "string",
+            "default": "5f7c4cee82488502f5bc7779",
+            "description": "user_id",
+            "required": true
+          },
+          {
+            "name": "authToken",
+            "in": "header",
+            "type": "string",
+            "default": "7e9939ff5cf90d51577d5eafad30f951",
+            "description": "authToken",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": [
+                {
+                  "amount": 14000,
+                  "paid": false,
+                  "_id": "5f7cd08e55705f39dd007f08",
+                  "vendor": {
+                    "userType": "User",
+                    "levelAccess": ["Any"],
+                    "accessGrant": "User",
+                    "superUser": true,
+                    "email": "abc124@abc.com",
+                    "name": "test1"
+                  },
+                  "workflow": {
+                    "defaultWorkflow": false,
+                    "status": 1,
+                    "levelArrangements": [
+                      {
+                        "levelType": "Sequential",
+                        "maxUsers": 2
+                      },
+                      {
+                        "levelType": "RoundRobin",
+                        "maxUsers": 3
+                      },
+                      {
+                        "levelType": "Any",
+                        "maxUsers": 6
+                      }
+                    ]
+                  },
+                  "createdAt": "2020-10-06T20:16:14.163Z",
+                  "updatedAt": "2020-10-06T20:16:14.163Z"
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorised"
           }
         }
       },
       "post": {
-        "tags": ["admins"],
-        "summary": "adds an inventory item",
-        "description": "Adds an item to the system",
-        "operationId": "addInventory",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
+        "tags": ["Pay"],
+        "deprecated": false,
+        "summary": "Create new Payments",
+        "description": "Create new Payments",
+        "operationId": "payment_create",
         "parameters": [
           {
-            "in": "body",
-            "name": "inventoryItem",
-            "description": "Inventory item to add",
-            "required": false,
-            "schema": {
-              "$ref": "#/definitions/InventoryItem"
-            }
+            "name": "user_id",
+            "in": "header",
+            "type": "string",
+            "default": "5f7c4cee82488502f5bc7779",
+            "description": "user_id",
+            "required": true
+          },
+          {
+            "name": "authToken",
+            "in": "header",
+            "type": "string",
+            "default": "7e9939ff5cf90d51577d5eafad30f951",
+            "description": "authToken",
+            "required": true
           }
         ],
         "responses": {
           "201": {
-            "description": "item created"
+            "description": "Created"
           },
           "400": {
-            "description": "invalid input, object invalid"
+            "description": "Bad Request"
           },
-          "409": {
-            "description": "an existing item already exists"
+          "401": {
+            "description": "Unauthorised"
+          }
+        }
+      }
+    },
+    "/pay/{payid}": {
+      "get": {
+        "tags": ["Pay"],
+        "deprecated": false,
+        "summary": "Get Payment By Id",
+        "description": "Get Payment By Id",
+        "operationId": "paymen_get_id",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "header",
+            "type": "string",
+            "default": "5f7c4cee82488502f5bc7779",
+            "description": "user_id",
+            "required": true
+          },
+          {
+            "name": "authToken",
+            "in": "header",
+            "type": "string",
+            "default": "7e9939ff5cf90d51577d5eafad30f951",
+            "description": "authToken",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": {
+                "amount": 14000,
+                "paid": false,
+                "_id": "5f7cd08e55705f39dd007f08",
+                "vendor": {
+                  "userType": "User",
+                  "levelAccess": ["Any"],
+                  "accessGrant": "User",
+                  "superUser": true,
+                  "email": "abc124@abc.com",
+                  "name": "test1"
+                },
+                "workflow": {
+                  "defaultWorkflow": false,
+                  "status": 1,
+                  "levelArrangements": [
+                    {
+                      "levelType": "Sequential",
+                      "maxUsers": 2
+                    },
+                    {
+                      "levelType": "RoundRobin",
+                      "maxUsers": 3
+                    },
+                    {
+                      "levelType": "Any",
+                      "maxUsers": 6
+                    }
+                  ]
+                },
+                "createdAt": "2020-10-06T20:16:14.163Z",
+                "updatedAt": "2020-10-06T20:16:14.163Z"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorised"
+          }
+        }
+      }
+    },
+    "/pay/stat/{payid}": {
+      "get": {
+        "tags": ["Pay"],
+        "deprecated": false,
+        "summary": "Get Payment Status",
+        "description": "Get Payment Status",
+        "operationId": "payment_status",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "header",
+            "type": "string",
+            "default": "5f7c4cee82488502f5bc7779",
+            "description": "user_id",
+            "required": true
+          },
+          {
+            "name": "authToken",
+            "in": "header",
+            "type": "string",
+            "default": "7e9939ff5cf90d51577d5eafad30f951",
+            "description": "authToken",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": {
+                "currentStage": "Sequential",
+                "currentStageApprovals": 0,
+                "overallStat": "Active"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorised"
+          }
+        }
+      }
+    },
+    "/api/pay/approve/{payid}": {
+      "patch": {
+        "tags": ["Pay"],
+        "deprecated": false,
+        "summary": "Approve Payments",
+        "description": "User approve Payments here",
+        "operationId": "payment_approve",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "header",
+            "type": "string",
+            "default": "5f7c4cee82488502f5bc7779",
+            "description": "user_id",
+            "required": true
+          },
+          {
+            "name": "authToken",
+            "in": "header",
+            "type": "string",
+            "default": "7e9939ff5cf90d51577d5eafad30f951",
+            "description": "authToken",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorised"
+          }
+        }
+      }
+    },
+    "/api/workflows": {
+      "get": {
+        "tags": ["Workflow"],
+        "deprecated": false,
+        "summary": "Get Workflow Details",
+        "description": "Get Workflow Details",
+        "operationId": "workflow_details",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "header",
+            "type": "string",
+            "default": "5f7c4cee82488502f5bc7779",
+            "description": "user_id",
+            "required": true
+          },
+          {
+            "name": "authToken",
+            "in": "header",
+            "type": "string",
+            "default": "7e9939ff5cf90d51577d5eafad30f951",
+            "description": "authToken",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": [
+                {
+                  "defaultWorkflow": false,
+                  "_id": "5f7cc2c6450b2c0a91966531",
+                  "status": 1,
+                  "levelArrangements": [
+                    {
+                      "levelType": "Sequential",
+                      "maxUsers": 2
+                    },
+                    {
+                      "levelType": "RoundRobin",
+                      "maxUsers": 3
+                    },
+                    {
+                      "levelType": "Any",
+                      "maxUsers": 6
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorised"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Workflow"],
+        "deprecated": false,
+        "summary": "Create new Workflow",
+        "description": "create new workflow",
+        "operationId": "worflow_create",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "header",
+            "type": "string",
+            "default": "5f7c4cee82488502f5bc7779",
+            "description": "user_id",
+            "required": true
+          },
+          {
+            "name": "authToken",
+            "in": "header",
+            "type": "string",
+            "default": "7e9939ff5cf90d51577d5eafad30f951",
+            "description": "authToken",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorised"
+          }
+        }
+      }
+    },
+    "/api/workflows/{workflowid}": {
+      "get": {
+        "tags": ["Workflow"],
+        "deprecated": false,
+        "summary": "Get Workflow Details By Id",
+        "description": "Get Workflow Details By Id",
+        "operationId": "workflow_by_id",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "header",
+            "type": "string",
+            "default": "5f7c4cee82488502f5bc7779",
+            "description": "user_id",
+            "required": true
+          },
+          {
+            "name": "authToken",
+            "in": "header",
+            "type": "string",
+            "default": "7e9939ff5cf90d51577d5eafad30f951",
+            "description": "authToken",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": {
+                "defaultWorkflow": false,
+                "_id": "5f7cc2c6450b2c0a91966531",
+                "status": 1,
+                "levelArrangements": [
+                  {
+                    "levelType": "Sequential",
+                    "maxUsers": 2
+                  },
+                  {
+                    "levelType": "RoundRobin",
+                    "maxUsers": 3
+                  },
+                  {
+                    "levelType": "Any",
+                    "maxUsers": 6
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorised"
           }
         }
       }
     }
   },
   "definitions": {
-    "InventoryItem": {
+    "LoginRequestBody": {
       "type": "object",
-      "required": ["id", "manufacturer", "name", "releaseDate"],
+      "required": ["email", "password"],
       "properties": {
-        "id": {
+        "email": {
           "type": "string",
-          "format": "uuid",
-          "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+          "format": "email",
+          "example": "abc@abc.com"
         },
-        "name": {
+        "password": {
           "type": "string",
-          "example": "Widget Adapter"
-        },
-        "releaseDate": {
-          "type": "string",
-          "format": "date-time",
-          "example": "2016-08-29T09:12:33.001Z"
-        },
-        "manufacturer": {
-          "$ref": "#/definitions/Manufacturer"
+          "description": "ciphered password",
+          "example": "ed42eea62e37f699cd7c5b936597f3059023e16e2dab52cfeacfb9b690c21937"
         }
       }
     },
-    "Manufacturer": {
-      "required": ["name"],
+    "UserPostRequestBody": {
+      "type": "object",
+      "required": [
+        "email",
+        "name",
+        "userType",
+        "levelAccess",
+        "accessGrant",
+        "superUser",
+        "password"
+      ],
       "properties": {
+        "email": {
+          "type": "string",
+          "description": "email",
+          "example": "abc@abc.com"
+        },
         "name": {
           "type": "string",
-          "example": "ACME Corporation"
+          "description": "name",
+          "example": "abc"
         },
-        "homePage": {
+        "userType": {
           "type": "string",
-          "format": "url",
-          "example": "https://www.acme-corp.com"
+          "enum": ["User", "Vendor"],
+          "default": "User",
+          "description": "userType",
+          "example": "User"
         },
-        "phone": {
+        "levelAccess": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["Sequential", "RoundRobin", "Any"]
+          },
+          "description": "levelAccess",
+          "example": "Sequential"
+        },
+        "accessGrant": {
           "type": "string",
-          "example": "408-867-5309"
+          "enum": ["Admin", "User"],
+          "description": "accessgrant type",
+          "example": "User"
+        },
+        "superUser": {
+          "type": "boolean",
+          "description": "superUser",
+          "example": true
+        },
+        "password": {
+          "type": "string",
+          "description": "password",
+          "example": "abc123"
         }
       }
     }

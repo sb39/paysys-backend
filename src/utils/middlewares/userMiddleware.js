@@ -6,6 +6,12 @@ module.exports = (wagner) => async (req, res, next) => {
       _id: req.params.id || req.headers.user_id,
     });
     const { data } = user;
+    if (req.headers.authtoken) {
+      if (data.accessToken !== req.headers.authtoken) {
+        return res.sendStatus(401);
+      }
+    }
+    // console.log(data);
     if (!data || !data.accessToken) {
       return res.sendStatus(401);
     }

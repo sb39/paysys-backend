@@ -45,8 +45,26 @@ module.exports = (app, wagner) => {
   );
 
   app.get(
+    '/api/users/available',
+    [
+      header('user_id', 'User_id must be present to proceed').exists(),
+      header('authToken', 'authToken must be present').exists(),
+    ],
+    EValidator,
+    userMiddleware,
+    async (req, res) => {
+      const response = await UsersController.searchAvailable(req.user);
+      return res.status(response.code).json(response.data);
+    },
+  );
+
+  app.get(
     '/api/users/:id',
-    [param('id', 'id should be present and must be valid').isAlphanumeric()],
+    [
+      param('id', 'id should be present and must be valid').isAlphanumeric(),
+      header('user_id', 'User_id must be present').exists(),
+      header('authToken', 'authToken must be present').exists(),
+    ],
     EValidator,
     userMiddleware,
     async (req, res) => {
@@ -57,7 +75,10 @@ module.exports = (app, wagner) => {
 
   app.get(
     '/api/users',
-    [header('user_id', 'User_id must be present to proceed').exists()],
+    [
+      header('user_id', 'User_id must be present to proceed').exists(),
+      header('authToken', 'authToken must be present').exists(),
+    ],
     EValidator,
     userMiddleware,
     (req, res, next) => {
@@ -72,8 +93,4 @@ module.exports = (app, wagner) => {
       return res.status(response.code).json(response.data);
     },
   );
-
-  app.patch('/api/users/:userid', async (req, res) => {});
-
-  app.delete('/api/users/:userid', async (req, res) => {});
 };

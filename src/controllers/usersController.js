@@ -3,6 +3,7 @@ class UsersController {
     this.wagner = wagner;
     this.usersManager = this.wagner.get('UsersManager');
     this.genParsers = this.wagner.get('GenParser');
+    this.paymentManager = this.wagner.get('PaymentManager');
   }
 
   async registerUsers(bodyObj) {
@@ -36,6 +37,24 @@ class UsersController {
     }
   }
 
+  async authGen(bodyObj) {
+    try {
+      const password = this.genParsers.passwordDecryptor(bodyObj.password);
+      const response = await this.usersManager.getSingle({
+        userId: bodyObj.email,
+        password: this.genParsers.passwordEncrypter(password),
+      });
+      const outputObj = {
+        userId: response._id,
+        authToken: response.accessToken,
+      };
+      return { code: 200, data: outputObj };
+    } catch (error) {
+      error.status = error.status || 400;
+      return { code: error.status, data: error.message };
+    }
+  }
+
   async getAllUsers() {
     try {
       const allusers = await this.usersManager.getAll();
@@ -56,6 +75,29 @@ class UsersController {
     try {
       await this.usersManager.update(condition, update);
       return true;
+    } catch (error) {
+      error.status = error.status || 400;
+      return { code: error.status, data: error.message };
+    }
+  }
+
+  async searchAvailable(userObj) {
+    try {
+      if (!userObj.levelAccess.length)
+        throw err('No proper access for given user');
+      const status = await this.paymentManager.getAllStat();
+      if (!status) {
+        return { code: 202, data: {} };
+      }
+      const available = status.filter((e) => {
+        if (userObj.levelAccess.includes(e.currentStage)) {
+          return e;
+        }
+      });
+      if (available.length) {
+        return { code: 200, data: available };
+      }
+      return { code: 204, data: {} };
     } catch (error) {
       error.status = error.status || 400;
       return { code: error.status, data: error.message };

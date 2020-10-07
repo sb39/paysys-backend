@@ -11,6 +11,8 @@ module.exports = (app, wagner) => {
   app.get(
     '/api/workflows/:workflowid',
     [
+      header('user_id', 'User_id must be present').exists(),
+      header('authToken', 'authToken must be present').exists(),
       param(
         'workflowid',
         'WorkflowId must be present and should be of type string',
@@ -30,14 +32,24 @@ module.exports = (app, wagner) => {
   app.post(
     '/api/workflows',
     [
+      header('user_id', 'User_id must be present').exists(),
+      header('authToken', 'authToken must be present').exists(),
       body('defaultWorkflow', 'Default should be Boolean').exists().isBoolean(),
       body('levelArrangements').exists().isArray(),
-      body('levelArrangements.*.levelType')
+      body(
+        'levelArrangements.*.levelType',
+        'Must be within "Sequential", "RoundRobin", "Any"',
+      )
         .exists()
         .isIn(['Sequential', 'RoundRobin', 'Any']),
       body('levelArrangements.*.maxUsers', 'MaxUsers must be present')
-        .exists()
-        .isInt(),
+        .custom((value) => {
+          if (typeof value === 'number') {
+            return true;
+          }
+          throw 'should ne numeric';
+        })
+        .exists(),
     ],
     EValidator,
     async (req, res) => {
@@ -45,34 +57,4 @@ module.exports = (app, wagner) => {
       return res.status(workflow.code).json(workflow.data || {});
     },
   );
-
-  // app.patch(
-  //   '/api/workflows/:workflowid',
-  //   // import workflow controller here check if editable or not if not DO NOT PROCEED
-  //   body('approvalTypeByLevels', 'approvalTypeByLevels should be array')
-  //     .isArray()
-  //     .custom((array) => {
-  //       if (this.value !== array.length) {
-  //         throw new Error(
-  //           "approvalTypeByLevels 's array length should equal to value of levels value",
-  //         );
-  //       }
-  //       return true;
-  //     }),
-  //   async (req, res) => {
-  //     const workflow = await workflowController.editWorkflow(req.params.body);
-  //     return res.status(workflow.code).json(workflow.data || {});
-  //   },
-  // );
-
-  // app.delete(
-  //   '/api/workflows/:workflowid',
-  //   body('workflowid'),
-  //   async (req, res) => {
-  //     const workflow = await workflowController.deleteWorkflow(
-  //       req.params.workflowid,
-  //     );
-  //     return res.status(workflow.code).json(workflow.data || {});
-  //   },
-  // );
 };
